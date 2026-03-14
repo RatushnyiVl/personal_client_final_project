@@ -1,4 +1,4 @@
-from exceptions import ContactNotFoundError
+from exceptions import ContactNotFoundError, ValidationError
 from models.contact_book import ContactBook
 from models.record import Record
 
@@ -104,3 +104,56 @@ class ContactService:
 
         self.contact_book.delete(name)
         return "Контакт успішно видалено."
+
+    # Видаляє телефон контакту
+    def delete_phone(self, name: str, phone: str) -> str:
+        record = self.contact_book.find(name)
+
+        if record is None:
+            raise ContactNotFoundError("Контакт не знайдено.")
+
+        record.remove_phone(phone)
+        return "Телефон успішно видалено."
+
+    # Шукає контакти за запитом
+    def find_contact(self, query: str) -> str:
+        if not query.strip():
+            raise ValidationError("Пошуковий запит не може бути порожнім.")
+
+        results = self.contact_book.search(query)
+
+        if not results:
+            return "Контакти не знайдено."
+
+        return "\n".join(str(record) for record in results)
+
+    # Повертає один контакт за ім'ям
+    def show_contact(self, name: str) -> str:
+        record = self.contact_book.find(name)
+
+        if record is None:
+            raise ContactNotFoundError("Контакт не знайдено.")
+
+        return str(record)
+
+    # Повертає всі контакти
+    def show_all_contacts(self) -> str:
+        if not self.contact_book.data:
+            return "Книга контактів порожня."
+
+        return "\n".join(str(record) for record in self.contact_book.data.values())
+
+    # Повертає список найближчих днів народження
+    def upcoming_birthdays(self, days: int) -> str:
+        if days < 0:
+            raise ValidationError("Кількість днів не може бути від'ємною.")
+
+        upcoming = self.contact_book.get_upcoming_birthdays(days)
+
+        if not upcoming:
+            return "Найближчих днів народження не знайдено."
+
+        return "\n".join(
+            f"{item['name']}: {item['congratulation_date']}"
+            for item in upcoming
+        )
