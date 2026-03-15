@@ -30,3 +30,17 @@ class FileRepository:
         }
         self.pickle_client.save(payload, DATA_FILE)
 
+    # з pickle файлу у CSV
+    def export_all_to_csv(self) -> None:
+        data = self.pickle_client.load(DATA_FILE)
+
+        if data is None:
+            contacts = ContactBook()
+            notes = NotesBook()
+        else:
+            contacts = data.get("contacts", ContactBook())
+            notes = data.get("notes", NotesBook())
+
+        self.csv_client.export_contacts(contacts.data.values(), CONTACTS_CSV_FILE)
+        self.csv_client.export_notes(notes.get_all_notes(), NOTES_CSV_FILE)
+        
