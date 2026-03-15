@@ -5,7 +5,7 @@ from models.field import Field
 
 
 class Email(Field):
-    EMAIL_PATTERN = re.compile(r"")
+    EMAIL_PATTERN = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
 
     # Валідує та встановлює email
     @Field.value.setter

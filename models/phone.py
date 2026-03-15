@@ -5,7 +5,7 @@ from models.field import Field
 
 
 class Phone(Field):
-    PHONE_PATTERN = re.compile(r"")
+    PHONE_PATTERN = re.compile(r"^\d{10}$")
 
     # Перевіряє та встановлює номер телефону
     @Field.value.setter
